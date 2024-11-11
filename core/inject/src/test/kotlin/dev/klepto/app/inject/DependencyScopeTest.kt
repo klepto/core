@@ -11,8 +11,6 @@ import io.kotest.matchers.string.shouldContain
  * @author Augustinas R. <http://github.com/klepto>
  */
 class DependencyScopeTest : FunSpec({
-    coroutineTestScope = true
-
     test("should bind a string constant") {
         val scope =
             dependencies {
