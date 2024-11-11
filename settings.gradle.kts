@@ -14,6 +14,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "app"
-include("app:concurrent")
-include("app:inject")
+rootProject.name = "core"
+include("core:concurrent")
+include("core:inject")
