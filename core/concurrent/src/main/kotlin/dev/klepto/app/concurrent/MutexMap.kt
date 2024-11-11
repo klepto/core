@@ -5,7 +5,7 @@ package dev.klepto.app.concurrent
  *
  * @author Augustinas R. <http://github.com/klepto>
  */
-class MutexMap<K : Any, V : Any> {
+class MutexMap<K, V> {
     private val map = mutableMapOf<K, V>()
     private val mutex = ReadWriteMutex()
 

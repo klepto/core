@@ -6,7 +6,7 @@ package dev.klepto.app.concurrent
  *
  * @author Augustinas R. <http://github.com/klepto>
  */
-class MutexList<T : Any> {
+class MutexList<T> {
     private val list = mutableListOf<T>()
     private val mutex = ReadWriteMutex()
 
