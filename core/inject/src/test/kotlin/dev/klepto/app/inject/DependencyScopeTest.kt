@@ -91,6 +91,28 @@ class DependencyScopeTest : FunSpec({
         child.get<Int>() shouldBe 42
     }
 
+    test("should override and resolve when combining scopes") {
+        val scopeA =
+            dependencies {
+                singleton { 0.1 }
+                singleton { 42 }
+            }
+        val scopeB =
+            dependencies {
+                singleton { "Hello, World!" }
+                singleton { 40 }
+            }
+        val scope =
+            dependencies {
+                bind(scopeA)
+                bind(scopeB)
+            }
+
+        scope.get<Double>() shouldBe 0.1
+        scope.get<Int>() shouldBe 40
+        scope.get<String>() shouldBe "Hello, World!"
+    }
+
     test("should resolve itself") {
         val scope = dependencies {}
         scope.get<DependencyScope>() shouldBe scope

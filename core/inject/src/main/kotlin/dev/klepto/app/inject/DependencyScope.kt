@@ -43,11 +43,18 @@ class DependencyScope(
     }
 
     /**
+     * Binds all dependencies from given [scope] to this scope.
+     */
+    suspend fun bind(scope: DependencyScope) {
+        dependencies.putAll(scope.dependencies.toMap())
+    }
+
+    /**
      * Attempts to recursively resolve a [Dependency] by its [key]
      * by first looking at dependencies that belong to this scope and then the [parent] scope.
      */
-    private suspend fun get(key: Dependency.Key): Dependency<*>? {
-        return dependencies.get(key) ?: parent?.get(key)
+    private suspend fun resolve(key: Dependency.Key): Dependency<*>? {
+        return dependencies.get(key) ?: parent?.resolve(key)
     }
 
     /**
@@ -63,7 +70,7 @@ class DependencyScope(
         }
 
         val dependencyKey = Dependency.Key(qualifier, type)
-        val dependency = get(dependencyKey)
+        val dependency = resolve(dependencyKey)
 
         // Allow resolving the scope itself.
         if (dependency == null && dependencyKey == DEPENDENCY_SCOPE_KEY) {
