@@ -50,21 +50,37 @@ class DependencyScope(
     }
 
     /**
-     * Attempts to recursively resolve a [Dependency] by its [key]
-     * by first looking at dependencies that belong to this scope and then the [parent] scope.
+     * Attempts to recursively resolve a [Dependency] by its [key] by first
+     * looking at dependencies that belong to this scope and then the [parent]
+     * scope.
      */
     private suspend fun resolve(key: Dependency.Key): Dependency<*>? {
         return dependencies.get(key) ?: parent?.resolve(key)
     }
 
     /**
-     * Resolves a dependency by its [qualifier] and [type].
+     * Resolves a dependency by its [qualifier] and [type]. Throws an exception
+     * if the dependency is not found or if a circular dependency is detected.
      */
-    @Suppress("UNCHECKED_CAST")
     suspend fun <T : Any> get(
         type: KClass<T>,
         qualifier: Any? = null,
     ): T {
+        val result = getOrNull(type, qualifier)
+        checkNotNull(result) { "Dependency not found: $qualifier, $type in scope: $this" }
+        return result
+    }
+
+    /**
+     * Resolves a dependency by its [qualifier] and [type]. Returns `null` if
+     * the dependency is not found. Throws an [IllegalStateException] if a
+     * circular dependency is detected.
+     */
+    @Suppress("UNCHECKED_CAST")
+    suspend fun <T : Any> getOrNull(
+        type: KClass<T>,
+        qualifier: Any? = null,
+    ): T? {
         check(!pending.contains(Dependency.Key(qualifier, type))) {
             "Circular dependency detected: $qualifier, $type in scope: $this"
         }
@@ -77,7 +93,10 @@ class DependencyScope(
             return this as T
         }
 
-        checkNotNull(dependency) { "Dependency not found: $qualifier, $type in scope: $this" }
+        if (dependency == null) {
+            return null
+        }
+
         pending.add(dependencyKey)
         val result = dependency.get(this)
         pending.remove(dependencyKey)

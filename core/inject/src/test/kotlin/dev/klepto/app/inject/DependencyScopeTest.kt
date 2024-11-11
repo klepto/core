@@ -69,7 +69,9 @@ class DependencyScopeTest : FunSpec({
         scope.get<String>("b") shouldBe "B"
         shouldThrow<IllegalStateException> {
             scope.get<String>()
-        }
+        }.message shouldContain "not found"
+
+        scope.getOrNull<String>() shouldBe null
     }
 
     test("should resolve parent dependencies") {

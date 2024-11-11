@@ -1,5 +1,6 @@
 package dev.klepto.app.inject
 
+import kotlinx.coroutines.runBlocking
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -9,11 +10,15 @@ import kotlin.contracts.contract
  * receiver [block].
  */
 @OptIn(ExperimentalContracts::class)
-inline fun dependencies(block: DependencyScope.() -> Unit): DependencyScope {
+inline fun dependencies(crossinline block: suspend DependencyScope.() -> Unit): DependencyScope {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    return DependencyScope().apply(block)
+
+    // DSL initializer is not meant for concurrent access, synchronizing here is fine.
+    return runBlocking {
+        DependencyScope().apply { block() }
+    }
 }
 
 /**
@@ -25,7 +30,7 @@ inline fun DependencyScope.scope(block: DependencyScope.() -> Unit): DependencyS
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    return DependencyScope(this).apply(block)
+    return DependencyScope(this).apply { block() }
 }
 
 /**
@@ -33,6 +38,13 @@ inline fun DependencyScope.scope(block: DependencyScope.() -> Unit): DependencyS
  */
 suspend inline fun <reified T : Any> DependencyScope.get(qualifier: Any? = null): T {
     return get(T::class, qualifier)
+}
+
+/**
+ * Resolves a dependency by its [qualifier] and reified generic type [T].
+ */
+suspend inline fun <reified T : Any> DependencyScope.getOrNull(qualifier: Any? = null): T? {
+    return getOrNull(T::class, qualifier)
 }
 
 /**
