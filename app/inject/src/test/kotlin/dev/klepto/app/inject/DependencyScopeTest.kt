@@ -3,6 +3,7 @@ package dev.klepto.app.inject
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 
 /**
  * Tests for [DependencyScope].
@@ -46,16 +47,17 @@ class DependencyScopeTest : FunSpec({
     test("should throw when circular dependency is detected") {
         val scope =
             dependencies {
-                singleton { get(::CircularA) }
-                singleton { get(::CircularB) }
+                singleton { of(::CircularA) }
+                singleton { of(::CircularB) }
             }
 
         shouldThrow<IllegalStateException> {
             scope.get<CircularA>()
-        }
+        }.message shouldContain "detected"
+
         shouldThrow<IllegalStateException> {
             scope.get<CircularB>()
-        }
+        }.message shouldContain "detected"
     }
 
     test("should resolve with qualifier") {

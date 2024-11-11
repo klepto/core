@@ -69,21 +69,21 @@ suspend inline fun <reified T : Any> DependencyScope.provider(
 /**
  * Reifies and resolves a provider function of zero parameters.
  */
-suspend inline fun <reified T : Any> DependencyScope.get(crossinline provider: suspend () -> T): T {
+suspend inline fun <reified T : Any> DependencyScope.of(crossinline provider: suspend () -> T): T {
     return provider()
 }
 
 /**
  * Reifies and resolves a provider function of one parameter.
  */
-suspend inline fun <reified T : Any, reified P0 : Any> DependencyScope.get(crossinline provider: suspend (P0) -> T): T {
+suspend inline fun <reified T : Any, reified P0 : Any> DependencyScope.of(crossinline provider: suspend (P0) -> T): T {
     return provider(get())
 }
 
 /**
  * Reifies and resolves a provider function of two parameters.
  */
-suspend inline fun <reified T : Any, reified P0 : Any, reified P1 : Any> DependencyScope.get(
+suspend inline fun <reified T : Any, reified P0 : Any, reified P1 : Any> DependencyScope.of(
     crossinline provider: suspend(P0, P1) -> T,
 ): T {
     return provider(get(), get())
@@ -92,7 +92,7 @@ suspend inline fun <reified T : Any, reified P0 : Any, reified P1 : Any> Depende
 /**
  * Reifies and resolves a provider function of three parameters.
  */
-suspend inline fun <reified T : Any, reified P0 : Any, reified P1 : Any, reified P2 : Any> DependencyScope.get(
+suspend inline fun <reified T : Any, reified P0 : Any, reified P1 : Any, reified P2 : Any> DependencyScope.of(
     crossinline provider: suspend(P0, P1, P2) -> T,
 ): T {
     return provider(get(), get(), get())
