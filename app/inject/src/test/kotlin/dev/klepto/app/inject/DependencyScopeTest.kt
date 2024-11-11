@@ -1,0 +1,100 @@
+package dev.klepto.app.inject
+
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+
+/**
+ * Tests for [DependencyScope].
+ *
+ * @author Augustinas R. <http://github.com/klepto>
+ */
+class DependencyScopeTest : FunSpec({
+    coroutineTestScope = true
+
+    test("should bind a string constant") {
+        val scope =
+            dependencies {
+                singleton { "Hello, World!" }
+            }
+
+        scope.get<String>() shouldBe "Hello, World!"
+    }
+
+    test("should return new instances when not singleton") {
+        val scope =
+            dependencies {
+                provider { listOf(0) }
+            }
+
+        val result1 = scope.get(List::class)
+        val result2 = scope.get(List::class)
+        (result1 === result2) shouldBe false
+    }
+
+    test("should return same instance when singleton") {
+        val scope =
+            dependencies {
+                singleton { listOf(0) }
+            }
+
+        val result1 = scope.get(List::class)
+        val result2 = scope.get(List::class)
+        (result1 === result2) shouldBe true
+    }
+
+    test("should throw when circular dependency is detected") {
+        val scope =
+            dependencies {
+                singleton { get(::CircularA) }
+                singleton { get(::CircularB) }
+            }
+
+        shouldThrow<IllegalStateException> {
+            scope.get<CircularA>()
+        }
+        shouldThrow<IllegalStateException> {
+            scope.get<CircularB>()
+        }
+    }
+
+    test("should resolve with qualifier") {
+        val scope =
+            dependencies {
+                singleton("a") { "A" }
+                singleton("b") { "B" }
+            }
+
+        scope.get<String>("a") shouldBe "A"
+        scope.get<String>("b") shouldBe "B"
+        shouldThrow<IllegalStateException> {
+            scope.get<String>()
+        }
+    }
+
+    test("should resolve parent dependencies") {
+        val parent =
+            dependencies {
+                singleton { "Hello, World!" }
+                singleton { 42 }
+            }
+
+        val child =
+            parent.scope {
+                singleton { "Goodbye, World!" }
+            }
+
+        parent.get<String>() shouldBe "Hello, World!"
+        child.get<String>() shouldBe "Goodbye, World!"
+        child.get<Int>() shouldBe 42
+    }
+
+    test("should resolve itself") {
+        val scope = dependencies {}
+        scope.get<DependencyScope>() shouldBe scope
+    }
+}) {
+    class CircularA(private val b: CircularB)
+
+    class CircularB(private val a: CircularA)
+}

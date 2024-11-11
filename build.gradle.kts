@@ -1,11 +1,29 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+
+group = "dev.klepto"
+version = "0.0.1-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.9.25" apply false
+    id("org.jetbrains.kotlin.jvm") version "2.0.21" apply false
+    id("org.jetbrains.kotlin.plugin.power-assert") version "2.0.0" apply false
 }
 
-configure(allprojects) {
-    group = "dev.klepto"
-    version = "0.0.1-SNAPSHOT"
-    apply<KotlinPluginWrapper>()
+configure(subprojects) {
+    apply {
+        plugin("org.jetbrains.kotlin.jvm")
+        plugin("org.jetbrains.kotlin.plugin.power-assert")
+    }
+
+    configure<KotlinJvmProjectExtension> {
+        jvmToolchain(21)
+    }
+
+    dependencies {
+        val testImplementation by configurations
+        testImplementation("io.kotest:kotest-runner-junit5:6.0.0.M1")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
