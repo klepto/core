@@ -1,4 +1,4 @@
-package dev.klepto.app.inject
+package dev.klepto.core.inject
 
 import kotlinx.coroutines.runBlocking
 import kotlin.contracts.ExperimentalContracts

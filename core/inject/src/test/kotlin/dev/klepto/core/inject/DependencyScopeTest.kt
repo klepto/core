@@ -1,4 +1,4 @@
-package dev.klepto.app.inject
+package dev.klepto.core.inject
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -45,8 +45,8 @@ class DependencyScopeTest : FunSpec({
     test("should throw when circular dependency is detected") {
         val scope =
             dependencies {
-                singleton { of(::CircularA) }
-                singleton { of(::CircularB) }
+                singleton { of(DependencyScopeTest::CircularA) }
+                singleton { of(DependencyScopeTest::CircularB) }
             }
 
         shouldThrow<IllegalStateException> {

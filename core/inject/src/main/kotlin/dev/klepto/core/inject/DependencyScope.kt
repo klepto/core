@@ -1,7 +1,7 @@
-package dev.klepto.app.inject
+package dev.klepto.core.inject
 
-import dev.klepto.app.concurrent.MutexList
-import dev.klepto.app.concurrent.MutexMap
+import dev.klepto.core.concurrent.MutexList
+import dev.klepto.core.concurrent.MutexMap
 import kotlin.reflect.KClass
 
 /**

@@ -1,6 +1,6 @@
-package dev.klepto.app.inject
+package dev.klepto.core.inject
 
-import dev.klepto.app.concurrent.MutexProperty
+import dev.klepto.core.concurrent.MutexProperty
 import kotlin.reflect.KClass
 
 /**

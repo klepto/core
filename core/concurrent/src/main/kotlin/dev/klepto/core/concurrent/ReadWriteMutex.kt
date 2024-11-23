@@ -1,4 +1,4 @@
-package dev.klepto.app.concurrent
+package dev.klepto.core.concurrent
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

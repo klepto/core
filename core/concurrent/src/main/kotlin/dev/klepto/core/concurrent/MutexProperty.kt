@@ -1,4 +1,4 @@
-package dev.klepto.app.concurrent
+package dev.klepto.core.concurrent
 
 /**
  * A thread-safe property that allows multiple readers and a single writer.
