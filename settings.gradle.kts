@@ -17,3 +17,4 @@ pluginManagement {
 rootProject.name = "core"
 include("core:concurrent")
 include("core:inject")
+include("core:process")
